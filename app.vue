@@ -74,36 +74,39 @@
           </button>
         </div>
       </div>
+      <button class="primary" @click="computeSelectedNames">Find Names</button>
+    </div>
+    <div class="cards-container">
+      <div v-for="name in selectedNames" :key="name" class="card">
+        <h4>{{ name }}</h4>
+        <p>x</p>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-enum Gender {
-  BOY = 'Boy',
-  UNISEX = 'Unisex',
-  GIRL = 'Girl',
-}
-enum Popularity {
-  TRENDY = 'Trendy',
-  UNIQUE = 'Unique',
-}
-enum Length {
-  LONG = 'Long',
-  ALL = 'All',
-  SHORT = 'Short',
-}
-interface OptionsState {
-  gender: Gender
-  popularity: Popularity
-  length: Length
-}
+import { Gender, Popularity, Length, names, OptionsState } from '@/data'
 
 const options = reactive<OptionsState>({
   gender: Gender.GIRL,
   popularity: Popularity.UNIQUE,
   length: Length.ALL,
 })
+
+const computeSelectedNames = () => {
+  const filteredNames = names
+    .filter((name) => name.gender === options.gender)
+    .filter((name) => name.popularity === options.popularity)
+    .filter((name) => {
+      if (options.length === Length.ALL) return true
+      return name.length === options.length
+    })
+
+  selectedNames.value = filteredNames.map((name) => name.name)
+}
+
+const selectedNames = ref<string[]>([])
 </script>
 
 <style scoped>
@@ -149,5 +152,37 @@ h1 {
 .option-active {
   background-color: rgb(249, 87, 89);
   color: white;
+}
+.primary {
+  background-color: rgb(249, 87, 89);
+  color: white;
+  border-radius: 6.5rem;
+  border: none;
+  padding: 0.75rem 4rem;
+  font-size: 1rem;
+  margin-top: 1rem;
+  cursor: pointer;
+}
+.cards-container {
+  display: flex;
+  margin-top: 3rem;
+  flex-wrap: wrap;
+}
+.card {
+  background-color: rgb(27, 60, 138);
+  width: 28%;
+  color: white;
+  border-radius: 1rem;
+  padding: 0.1rem;
+  margin-right: 0.5rem;
+  margin-bottom: 1rem;
+  position: relative;
+}
+.card p {
+  position: absolute;
+  top: -29%;
+  left: 92.5%;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.178);
 }
 </style>
